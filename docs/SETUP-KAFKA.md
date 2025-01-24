@@ -61,13 +61,14 @@ java --version
    1. ~ on Mac/Linux
    2. On Windows, save using File Explorer. Change the following to your wsl username and paste it into the Explorer address bar: \\wsl.localhost\Ubuntu\home\denisecase
 
-## Step 3: Extract Kafka to home directory
+## Step 3: Extract Kafka to home directory using tar
 
 In your terminal (WSL/Mac/Linux):
 
 1. Navigate to your home directory where you downloaded the file. 
-2. List the file contents.
-3. Extract the contents of the zipfile.
+2. List the folder contents and ensure the zipfile name is correct.
+3. Extract the contents of the zipfile using the tar command.
+4. List the folder contents again to confirm.
 
 ```zsh
 cd ~
@@ -76,13 +77,20 @@ tar -xvzf kafka_2.13-3.9.0.tgz -C ~/
 ls
 ```
 
-## Step 4: Rename the Folder (to kafka)
+## Step 4: Rename the Folder (to kafka) and Ensure Execute Permissions
 
-To simplify future commands, rename/move the extracted folder to ~/kafka:
+In your terminal (WSL/Mac/Linux):
+
+1. Rename/move the extracted folder to ~/kafka.
+2. Change diretory to ~/kafka.
+3. Recursively add execute permissions to all scripts in the bin directory.
+4. Verify that we have execute permission for files in the bin directory. 
 
 ```bash
 mv ~/kafka_2.13-3.9.0 ~/kafka
-ls
+cd ~/kafka
+chmod -R +x bin
+ls -l bin
 ```
 
 ## Step 5: Configure Zookeeper
@@ -91,32 +99,30 @@ Zookeeper’s default configuration should work fine. You can review its configu
  ~/kafka/config/zookeeper.properties.
 
 
-## Step 6: Configure Kafka & If Windows, Forward
-Open Kafka’s configuration file at ~/kafka/config/server.properties
-Copy and paste the contents of [docs/server.properties](docs/server.properties)
-Save the file and exit.
+## Step 6: Configure Kafka
 
-### OPTIONAL & NOT EXPECTED TO BE NEEDED
+1. Open Kafka’s configuration file at ~/kafka/config/server.properties.[1] 
+2. Copy and paste the contents of the docs/server.properties file found in this repo to replace the entire contents.
+3. Save your file and exit.
 
-   If Windows, forward the wsl port to local host by running the following command in wsl:
-   ```
-   sudo iptables -t nat -A PREROUTING -p tcp --dport 9092 -j DNAT --to-destination $(hostname -I | awk '{print $1}'):9092
-   ```
-
-   If windows, allow responses to the forwarded traffic by running the following command in wsl:
-   ```zsh
-   sudo iptables -t nat -A POSTROUTING -j MASQUERADE
-   ```
+Note [1] On Windows machines:
+   1. Open File Explorer
+   2. Enter "\\wsl$" (don't enter the quotations) into the file bar at the top
+   3. Go to Ubuntu -> home ->(your username) ->kafka->config
+   4. In the config folder there will be a server file. ( when you select that file it will ask if you want to allow... you do)
+   5. Update that file by overwriting the contents from the docs/server.properties file provided in this repo. 
 
 ## Step 7: Start Zookeeper Service (Terminal 1)
 
 In a terminal (WSL/Mac/Linux):
 
 1. Navigate to the Kafka directory.
-2. Start Zookeeper service. 
+2. Ensure we have execute permissions (may not be necessary)
+3. Start Zookeeper service. 
 
 ```zsh
 cd ~/kafka
+chmod +x zookeeper-server-start.sh
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
 
@@ -128,10 +134,12 @@ Keep this terminal open while working with Kafka.
 Open a NEW terminal. If Windows, open PowerShell and run `wsl` to get a WSL terminal first.
 
 1. Navigate to the Kafka directory.
-2. Start Kafka service. 
+2. Ensure we have execute permissions (may not be necessary)
+3. Start Kafka service. 
 
 ```zsh
 cd ~/kafka
+chmod +x kafka-server-start.sh
 bin/kafka-server-start.sh config/server.properties
 ```
 
@@ -163,6 +171,11 @@ bin/kafka-topics.sh --list --bootstrap-server localhost:9092
 
 You should see test-topic in the output.
 
+## Troubleshooting - Mac & Homebrew
+
+If you're on a Mac, try "brew services start kafka" and "brew services start zookeeper". 
+
+Quit those brew services once you're finished or zookeeper will continue to run in the background.
 
 ## Recommended Resources
 
