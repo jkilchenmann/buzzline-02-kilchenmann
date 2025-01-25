@@ -83,6 +83,12 @@ source .venv/bin/activate
 python3 -m consumers.kafka_consumer_kilchenmann
 ```
 
+## Task 6. Ensure Monitoring is Correct
+
+If the producer and consumer are working correctly, the consumer will give an alert everytime
+"Today is a Friday." appears in the consumer.  It will be easy to see because it will be in yellow text
+and the line will be longer than the other messages.
+
 ## Later Work Sessions
 When resuming work on this project:
 1. Open the folder in VS Code. 
